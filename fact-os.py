@@ -1,16 +1,22 @@
 import streamlit as st
+import plotly.express as px
 import mysql.connector
 import pandas as pd
 import os
 from dotenv import load_dotenv
 
-# Cargar el archivo .env
 load_dotenv()
 
-# Título de la app
+st.set_page_config(
+    page_title="Mi Dashboard",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"  # o "collapsed"
+)
+
 st.title("Pendientes por Obra Social - Año 2025")
 
-# Conexión a la base de datos usando variables de entorno (definidas en los secrets)
+# Conexión a la base de datos
 conn = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     port=os.getenv("DB_PORT"),
@@ -19,42 +25,70 @@ conn = mysql.connector.connect(
     database=os.getenv("DB_NAME")
 )
 
-cursor = conn.cursor()
-
-# Query SQL (la misma que pasaste)
+# Ejecutar la query
 query = """
+SELECT o.os_nombre AS obra_social, COUNT(p.prestacion_id) AS cantidad_prestaciones
+FROM v_prestaciones p JOIN v_os o 
+ON p.prestacion_os = o.os_id
+WHERE prestacion_estado_descrip = "ACTIVA" COLLATE utf8mb4_0900_ai_ci
+GROUP BY obra_social
+"""
+df = pd.read_sql(query, conn)
+
+# Asegurar orden correcto (por si acaso)
+df = df.sort_values('cantidad_prestaciones', ascending=False)
+
+# Gráfico
+fig = px.bar(
+    df,
+    x='obra_social',
+    y='cantidad_prestaciones',
+    title='Cantidad de prestaciones por obra social',
+    labels={'obra_social': 'Obra Social', 'cantidad_prestaciones': 'Cantidad'},
+)
+
+# Ajustar layout para que se use todo el ancho
+fig.update_layout(
+    xaxis_title=None,
+    yaxis_title=None,
+    title_x=0.5,  # Centra el título
+    margin=dict(l=200, r=0, t=40, b=20),
+    width=1200,
+    height=500
+)
+
+# Mostrar en Streamlit
+st.plotly_chart(fig, use_container_width=False)
+
+query2 = """
 SELECT 
-    c.NroComprobante, 
-    c.cbteFch, 
-    c.factura_cobro_descrip, 
-    o.os_nombre, 
-    p.alumno_nombre, 
-    p.alumno_apellido
-FROM v_comprobantes c 
-JOIN v_os o ON c.os_id = o.os_id 
-JOIN v_prestaciones p ON c.prestacion_id = p.prestacion_id
-WHERE YEAR(cbteFch) = 2025 
-AND factura_cobro_descrip = 'PENDIENTE' COLLATE utf8mb4_0900_ai_ci
+    o.os_nombre AS obra_social,
+    AVG(DATEDIFF(c.cobro_fec, c.cbteFch)) AS promedio_dias
+FROM 
+    v_comprobantes c JOIN v_os o
+ON c.os_id = o.os_id
+WHERE 
+    c.cbteFch IS NOT NULL
+    AND c.cobro_fec IS NOT NULL
+    AND o.os_nombre NOT IN ('OSDE')
+GROUP BY obra_social
 """
 
-cursor.execute(query)
-registros = cursor.fetchall()
+df2 = pd.read_sql(query2, conn)
 
-# Cierre de cursor y conexión
-cursor.close()
 conn.close()
 
-# Convertir a DataFrame
-df = pd.DataFrame(registros, columns=[
-                  "NroComprobante", "Fecha", "Estado", "Obra Social", "Nombre", "Apellido"])
+df2 = df2.sort_values(by='promedio_dias', ascending=True)
 
-# Agrupar por obra social y contar alumnos únicos
-df["Alumno"] = df["Nombre"] + " " + df["Apellido"]
-conteo = df.groupby("Obra Social")["Alumno"].nunique().reset_index()
-conteo = conteo.sort_values(by="Alumno", ascending=False)
+st.subheader("Promedio de días hasta autorización por obra social")
 
-# Mostrar tabla y gráfico
-st.subheader("Cantidad de alumnos con prestaciones pendientes por obra social")
-st.bar_chart(conteo.set_index("Obra Social"))
+fig2 = px.bar(
+    df2,
+    x="obra_social",
+    y="promedio_dias",
+    title="Promedio de días para autorizar prestación",
+    labels={"obra_social": "Obra Social", "promedio_dias": "Días promedio"}
+)
+fig2.update_layout(title_x=0.5, height=500, width=1800)
 
-st.dataframe(df)
+st.plotly_chart(fig2)
