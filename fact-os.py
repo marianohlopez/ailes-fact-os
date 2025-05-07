@@ -63,7 +63,7 @@ st.plotly_chart(fig, use_container_width=False)
 query2 = """
 SELECT 
     o.os_nombre AS obra_social,
-    AVG(DATEDIFF(c.cobro_fec, c.cbteFch)) AS promedio_dias
+    ROUND(AVG(DATEDIFF(c.cobro_fec, c.cbteFch)), 2) AS promedio_dias
 FROM 
     v_comprobantes c JOIN v_os o
 ON c.os_id = o.os_id
@@ -82,7 +82,7 @@ conn.close()
 
 df2 = df2.sort_values(by='promedio_dias', ascending=True)
 
-#st.subheader("Promedio de días de pago")
+# st.subheader("Promedio de días de pago")
 
 fig2 = px.bar(
     df2,
