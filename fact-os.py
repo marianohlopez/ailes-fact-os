@@ -8,13 +8,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 st.set_page_config(
-    page_title="Mi Dashboard",
+    page_title="Dashboard-Contable",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# Estilo CSS
+css = open("styles.css").read()
+
+st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
 st.title("Reporte de area contable - Año 2025")
+
+st.markdown("<div class='space'></div>", unsafe_allow_html=True)
 
 # Conexión a la base de datos
 conn = mysql.connector.connect(
@@ -45,20 +52,53 @@ fig = px.bar(
     y='cantidad_prestaciones',
     title='Cantidad de prestaciones por obra social',
     labels={'obra_social': 'Obra Social', 'cantidad_prestaciones': 'Cantidad'},
+    text='cantidad_prestaciones'
 )
 
 # Ajustar layout para que se use todo el ancho
 fig.update_layout(
-    xaxis_title=None,
-    yaxis_title=None,
-    title_x=0.5,  # Centra el título
-    margin=dict(l=150, r=0, t=40, b=20),
-    width=1200,
-    height=500
+    title_x=0.5,
+    margin=dict(l=00, r=0, t=40, b=20),
+    height=600
 )
 
 # Mostrar en Streamlit
 st.plotly_chart(fig, use_container_width=False)
+
+# Tarjeta de promedio total de dif. de días
+
+query3 = """ 
+    SELECT 
+        ROUND(AVG(DATEDIFF(c.cobro_fec, c.cbteFch)), 2) AS promedio_total
+    FROM 
+        v_comprobantes c JOIN v_os o
+    ON c.os_id = o.os_id
+    WHERE 
+        c.cbteFch IS NOT NULL
+        AND c.cobro_fec IS NOT NULL
+        AND o.os_nombre NOT IN ('OSDE');
+"""
+
+df3 = pd.read_sql(query3, conn)
+
+prom_total = df3['promedio_total'][0]
+
+st.markdown("<div class='space'></div>", unsafe_allow_html=True)
+
+# Mostrar en tarjeta
+
+st.markdown(f"""
+    <div class="card-container">
+        <div class="card">
+            <div class="card-title">Promedio total de días de pago</div>
+            <div class="card-value">{prom_total} %</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown("<div class='space'></div>", unsafe_allow_html=True)
+
+# Gráfico de días para autorizar por os
 
 query2 = """
 SELECT 
@@ -88,17 +128,18 @@ fig2 = px.bar(
     df2,
     x="obra_social",
     y="promedio_dias",
-    title="Promedio de días de pago",
-    labels={"obra_social": "Obra Social", "promedio_dias": "Días promedio"}
+    title="Promedio de días de pago por obra social",
+    labels={"obra_social": "Obra Social", "promedio_dias": "Días promedio"},
+    text='promedio_dias'
 )
 fig2.update_layout(
-    xaxis_title=None,
-    yaxis_title=None,
-    title_x=0.5,  # Centra el título
-    margin=dict(l=150, r=0, t=40, b=20),
-    width=1200,
-    height=500
+    title_x=0.5,
+    margin=dict(l=0, r=0, t=40, b=20),
+    height=600
 )
 
-
 st.plotly_chart(fig2, use_container_width=False)
+
+
+
+
