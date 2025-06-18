@@ -173,10 +173,14 @@ df_prest_os = df_prest_os.merge(
     how='left'
 )
 
+# Rellenar colores faltantes con gris
+df_prest_os['color'] = df_prest_os['color'].fillna('gris')
+
 color_discrete_map = {
     "verde": "green",
     "amarillo": "gold",
-    "rojo": "red"
+    "rojo": "red",
+    "gris": "gray"
 }
 
 # Gráfico
@@ -188,7 +192,8 @@ fig_prest_os = px.bar(
     color_discrete_map=color_discrete_map,
     title='Cantidad de prestaciones activas por obra social del año 2025',
     labels={'obra_social': 'Obra Social', 'cantidad_prestaciones': 'Cantidad'},
-    text='cantidad_prestaciones'
+    text='cantidad_prestaciones',
+    category_orders={"obra_social": df_prest_os["obra_social"].tolist()}
 )
 
 # Ajustar layout para que se use todo el ancho
