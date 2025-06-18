@@ -75,9 +75,9 @@ st.markdown(f"""
 st.markdown("""
 <div style='padding: 10px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9'>
   <strong>Leyenda de colores:</strong><br>
-  <span style='font-weight:bold'>🟩 Verde:</span> Menos de 15 días de pago<br>
-  <span style='font-weight:bold'>🟨 Amarillo:</span> Entre 15 y 30 días de pago<br>
-  <span style='font-weight:bold'>🟥 Rojo:</span> Más de 30 días de pago
+  <span style='font-weight:bold'>🟩 Verde:</span> Menos de 30 días de pago<br>
+  <span style='font-weight:bold'>🟨 Amarillo:</span> Entre 30 y 60 días de pago<br>
+  <span style='font-weight:bold'>🟥 Rojo:</span> Más de 60 días de pago
 </div>
 """, unsafe_allow_html=True)
 
@@ -112,14 +112,16 @@ df_days_aut = pd.concat([
     }])
 ], ignore_index=True)
 
+
 def get_color(dias):
-    if dias < 15:
+    if dias < 30:
         return 'verde'
-    elif dias <= 30:
+    elif dias <= 60:
         return 'amarillo'
     else:
         return 'rojo'
-    
+
+
 df_days_aut["color"] = df_days_aut["promedio_dias"].apply(get_color)
 
 df_days_aut = df_days_aut.sort_values(by='promedio_dias', ascending=True)
@@ -128,7 +130,7 @@ fig_days_aut = px.bar(
     df_days_aut,
     x="obra_social",
     y="promedio_dias",
-    color="color", 
+    color="color",
     color_discrete_map={
         "verde": "green",
         "amarillo": "gold",
@@ -209,7 +211,7 @@ df = pd.DataFrame(data)
 df = df.melt(id_vars="mes", var_name="Obra Social", value_name="Cantidad")
 
 # Título
-#st.title("Evolución mensual de prestaciones")
+# st.title("Evolución mensual de prestaciones")
 
 # Gráfico de línea
 fig = px.line(df, x="mes", y="Cantidad", color="Obra Social", markers=True,
@@ -217,8 +219,4 @@ fig = px.line(df, x="mes", y="Cantidad", color="Obra Social", markers=True,
 fig.update_layout(xaxis_title="Mes", yaxis_title="Cantidad")
 
 # Mostrar en Streamlit
-#st.plotly_chart(fig)
-
-
-
-
+# st.plotly_chart(fig)
