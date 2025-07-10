@@ -83,3 +83,5 @@ fig.update_layout(xaxis_title="Mes", yaxis_title="Cantidad")
 
 # Mostrar en Streamlit
 # st.plotly_chart(fig)
+
+conn.close()
