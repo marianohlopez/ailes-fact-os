@@ -33,3 +33,9 @@ Este proyecto es un **dashboard interactivo en Streamlit** que analiza los tiemp
 ---
 
 ## 📸 Capturas de pantalla
+
+<img width="1286" height="537" alt="image" src="https://github.com/user-attachments/assets/58532c8f-62cb-4234-9381-bf6f4016f873" />
+
+<img width="1276" height="387" alt="image" src="https://github.com/user-attachments/assets/25a5bf69-96cc-4965-8da5-0709f1a9ddb4" />
+
+
