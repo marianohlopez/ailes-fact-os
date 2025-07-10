@@ -36,7 +36,7 @@ year_condition = year_filter(year)
 
 #--- Tarjeta de promedio total de dif. de días
 
-prom_total = q_prom_card(year_condition)
+prom_total = q_prom_card(year_condition, conn)
 
 # Mostrar en tarjeta
 card_total_average(year, prom_total)
@@ -57,13 +57,13 @@ st.markdown("<div class='space'></div>", unsafe_allow_html=True)
 
 #--- Gráfico de días para autorizar por os
 
-chart_days_aut(year_condition,year)
+chart_days_aut(year_condition, year, conn)
 
 st.markdown("<div class='space'></div>", unsafe_allow_html=True)
 
 #--- Cant. de prestaciones por OS
 
-chart_cant_prest(year_condition)
+chart_cant_prest(year_condition, conn)
 
 #-----------------------------------------------------------------
 

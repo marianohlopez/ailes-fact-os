@@ -1,12 +1,9 @@
-from data.connection import get_connection
 import pandas as pd
 from utils.utils import get_color
 
-conn = get_connection()
-
 #--- Tarjeta de promedio total de dif. de días
 
-def q_prom_card(year_condition):
+def q_prom_card(year_condition, conn):
   q_prom_card = f""" 
       SELECT 
           ROUND(AVG(DATEDIFF(c.cobro_fec, c.cbteFch)), 2) AS promedio_total
@@ -26,7 +23,7 @@ def q_prom_card(year_condition):
 
 #--- Gráfico de días para autorizar por os
 
-def q_days_aut(year_condition):
+def q_days_aut(year_condition, conn):
   q_days_aut = f"""
   SELECT 
       o.os_nombre AS obra_social,
@@ -60,7 +57,7 @@ def q_days_aut(year_condition):
 
 # Cant. de prestaciones por OS
 
-def q_prest_os():
+def q_prest_os(conn):
 
   q_prest_os = """
   SELECT o.os_nombre AS obra_social, COUNT(p.prestacion_id) AS cantidad_prestaciones

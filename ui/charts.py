@@ -4,11 +4,9 @@ from data.query import q_days_aut
 from data.query import q_prest_os
 from utils.utils import get_color
 
+def chart_days_aut(year_condition, year, conn):
 
-
-def chart_days_aut(year_condition, year):
-
-  df_days_aut = q_days_aut(year_condition)
+  df_days_aut = q_days_aut(year_condition, conn)
 
   fig_days_aut = px.bar(
       df_days_aut,
@@ -35,10 +33,10 @@ def chart_days_aut(year_condition, year):
 
 #--- Cant. de prestaciones por OS
 
-def chart_cant_prest(year_condition):
+def chart_cant_prest(year_condition, conn):
 
-  df_prest_os = q_prest_os()
-  df_days_aut = q_days_aut(year_condition)
+  df_prest_os = q_prest_os(conn)
+  df_days_aut = q_days_aut(year_condition, conn)
 
   df_prest_os = df_prest_os.merge(
       df_days_aut[['obra_social', 'color']],
