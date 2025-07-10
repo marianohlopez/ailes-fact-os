@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-from data.connection import get_connection
+from data.connection import get_connection_creator
 from logic.filters import year_filter
 from data.query import q_prom_card
 from ui.cards import card_total_average
@@ -24,8 +24,11 @@ st.title("Reporte de area contable - Año 2025")
 
 st.markdown("<div class='space'></div>", unsafe_allow_html=True)
 
-# Conexión a la base de datos
-conn = get_connection()
+# get función que devuelve conexiones frescas
+get_conn = get_connection_creator()
+
+# crear conexión viva en cada ejecución
+conn = get_conn()
 
 #--- Filtro de Año
 
