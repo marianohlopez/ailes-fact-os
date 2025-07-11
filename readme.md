@@ -2,7 +2,7 @@
 
 Este proyecto es un **dashboard interactivo en Streamlit** que analiza los tiempos de cobro y las prestaciones activas de cada Obra Social (OS) durante el año 2025. Permite a contaduría identificar rápidamente demoras de pago, volúmenes de prestaciones y tendencias mensuales.
 
-## Deployment: https://ailes-fact-os.streamlit.app/
+## Deployment: https://ailes-contable.streamlit.app/
 
 ---
 
@@ -37,5 +37,3 @@ Este proyecto es un **dashboard interactivo en Streamlit** que analiza los tiemp
 <img width="1286" height="537" alt="image" src="https://github.com/user-attachments/assets/58532c8f-62cb-4234-9381-bf6f4016f873" />
 
 <img width="1276" height="387" alt="image" src="https://github.com/user-attachments/assets/25a5bf69-96cc-4965-8da5-0709f1a9ddb4" />
-
-
